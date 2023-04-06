@@ -124,6 +124,7 @@ try {
 	(async () => {
 		const project = await getProject();
 		if (!project) throw new Error("Unable to find pages project");
+		console.log({ project });
 
 		const githubBranch = env.GITHUB_REF_NAME;
 		const productionEnvironment = githubBranch === project.production_branch;
@@ -135,13 +136,16 @@ try {
 			const octokit = getOctokit(gitHubToken);
 			gitHubDeployment = await createGitHubDeployment(octokit, productionEnvironment, environmentName);
 		}
+		console.log({ gitHubDeployment })
 
 		const pagesDeployment = await createPagesDeployment();
 		setOutput("id", pagesDeployment.id);
 		setOutput("url", pagesDeployment.url);
 		setOutput("environment", pagesDeployment.environment);
+		console.log({ pagesDeployment })
 
 		let alias = pagesDeployment.url;
+		console.log({ productionEnvironment, aliases: pagesDeployment.aliases })
 		if (!productionEnvironment && pagesDeployment.aliases && pagesDeployment.aliases.length > 0) {
 			alias = pagesDeployment.aliases[0];
 		}
